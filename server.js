@@ -6,6 +6,27 @@ const PORT = 3000;
 // Middleware para parsear JSON
 app.use(express.json());
 
+// Ruta raíz - Información de la API
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Welcome to the K6 Testing API',
+    version: '1.0.0',
+    endpoints: {
+      GET: {
+        '/health': 'Verifica el estado del servidor',
+        '/api/test': 'Retorna una respuesta simple con retardo aleatorio (0-500ms)'
+      },
+      POST: {
+        '/api/test': 'Recibe datos JSON y responde con los datos recibidos'
+      }
+    },
+    examples: {
+      GET: 'curl http://localhost:3000/api/test',
+      POST: 'curl -X POST http://localhost:3000/api/test -H "Content-Type: application/json" -d \'{"name":"test"}\''
+    }
+  });
+});
+
 // Ruta GET - Respuesta simple con retardo aleatorio
 app.get('/api/test', (req, res) => {
   // Simulamos un retardo aleatorio de hasta 500ms
