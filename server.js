@@ -56,6 +56,36 @@ app.post('/api/test', (req, res) => {
   }, delay);
 });
 
+// Ruta POST /api/data - Para procesar datos con validación
+app.post('/api/data', (req, res) => {
+  // Simulamos un retardo aleatorio de hasta 500ms
+  const delay = Math.random() * 500;
+  
+  // Validar que el body tenga propiedades requeridas
+  const { userId, name, email } = req.body;
+  
+  if (!userId || !name || !email) {
+    return res.status(400).json({
+      message: 'Missing required fields',
+      requiredFields: ['userId', 'name', 'email']
+    });
+  }
+  
+  setTimeout(() => {
+    res.status(201).json({
+      message: 'Data processed successfully',
+      timestamp: new Date().toISOString(),
+      processedData: {
+        userId,
+        name,
+        email,
+        processedAt: new Date().toISOString()
+      },
+      delay: `${delay.toFixed(2)}ms`
+    });
+  }, delay);
+});
+
 // Ruta de salud
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Server is running' });
