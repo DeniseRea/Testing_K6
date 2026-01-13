@@ -14,41 +14,35 @@ app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 
 // ==================== CONEXIÓN MONGODB ATLAS ====================
 console.log('🔄 Conectando a MongoDB Atlas...');
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => console.log('✅ MongoDB Atlas conectado exitosamente'))
-  .catch(err => console.error('❌ Error conectando MongoDB:', err.message));
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('MongoDB Atlas conectado exitosamente'))
+  .catch(err => console.error(' Error conectando MongoDB:', err.message));
 
 // ==================== ESQUEMA DE USUARIO ====================
 const userSchema = new mongoose.Schema({
-  email: { 
-    type: String, 
-    unique: true, 
+  email: {
+    type: String,
+    unique: true,
     required: true,
     lowercase: true
   },
-  password: { 
-    type: String, 
-    required: true 
+  password: {
+    type: String,
+    required: true
   },
-  name: { 
-    type: String, 
-    required: true 
+  name: {
+    type: String,
+    required: true
   },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
+  createdAt: {
+    type: Date,
+    default: Date.now
   },
-  updatedAt: { 
-    type: Date, 
-    default: Date.now 
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
 });
-
-// Crear índice para email
-userSchema.index({ email: 1 });
 
 const User = mongoose.model('User', userSchema);
 
@@ -56,9 +50,9 @@ const User = mongoose.model('User', userSchema);
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
-  
+
   if (!token) {
-    return res.status(401).json({ 
+    return res.status(401).json({
       message: 'Token requerido',
       error: 'No authorization header'
     });
@@ -69,7 +63,7 @@ const verifyToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
-    res.status(403).json({ 
+    res.status(403).json({
       message: 'Token inválido o expirado',
       error: err.message
     });
@@ -107,7 +101,7 @@ app.post('/auth/register', async (req, res) => {
 
   // Validación de campos
   if (!email || !password || !name) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       message: 'Faltan campos requeridos',
       required: ['email', 'password', 'name'],
       responseTime: `${Date.now() - startTime}ms`
@@ -118,7 +112,7 @@ app.post('/auth/register', async (req, res) => {
     // Verificar si el usuario ya existe
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'El email ya está registrado',
         responseTime: `${Date.now() - startTime}ms`
       });
@@ -126,14 +120,14 @@ app.post('/auth/register', async (req, res) => {
 
     // Encriptar contraseña
     const hashedPassword = await bcryptjs.hash(password, 10);
-    
+
     // Crear nuevo usuario
-    const user = new User({ 
-      email: email.toLowerCase(), 
-      password: hashedPassword, 
-      name 
+    const user = new User({
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      name
     });
-    
+
     await user.save();
 
     res.status(201).json({
@@ -144,7 +138,7 @@ app.post('/auth/register', async (req, res) => {
     });
   } catch (err) {
     console.error('Error en registro:', err);
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Error al registrar usuario',
       error: err.message,
       responseTime: `${Date.now() - startTime}ms`
@@ -159,7 +153,7 @@ app.post('/auth/login', async (req, res) => {
 
   // Validación de campos
   if (!email || !password) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       message: 'Email y contraseña requeridos',
       responseTime: `${Date.now() - startTime}ms`
     });
@@ -169,7 +163,7 @@ app.post('/auth/login', async (req, res) => {
     // Buscar usuario
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         message: 'Credenciales inválidas',
         responseTime: `${Date.now() - startTime}ms`
       });
@@ -178,7 +172,7 @@ app.post('/auth/login', async (req, res) => {
     // Verificar contraseña
     const isValidPassword = await bcryptjs.compare(password, user.password);
     if (!isValidPassword) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         message: 'Credenciales inválidas',
         responseTime: `${Date.now() - startTime}ms`
       });
@@ -186,8 +180,8 @@ app.post('/auth/login', async (req, res) => {
 
     // Generar JWT
     const token = jwt.sign(
-      { 
-        userId: user._id, 
+      {
+        userId: user._id,
         email: user.email,
         name: user.name
       },
@@ -205,7 +199,7 @@ app.post('/auth/login', async (req, res) => {
     });
   } catch (err) {
     console.error('Error en login:', err);
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Error en login',
       error: err.message,
       responseTime: `${Date.now() - startTime}ms`
@@ -218,12 +212,12 @@ app.post('/auth/login', async (req, res) => {
 // GET /api/profile - Obtener perfil del usuario
 app.get('/api/profile', verifyToken, async (req, res) => {
   const startTime = Date.now();
-  
+
   try {
     const user = await User.findById(req.user.userId).select('-password');
-    
+
     if (!user) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         message: 'Usuario no encontrado',
         responseTime: `${Date.now() - startTime}ms`
       });
@@ -235,7 +229,7 @@ app.get('/api/profile', verifyToken, async (req, res) => {
     });
   } catch (err) {
     console.error('Error en profile:', err);
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Error al obtener perfil',
       error: err.message,
       responseTime: `${Date.now() - startTime}ms`
@@ -249,7 +243,7 @@ app.post('/api/update-profile', verifyToken, async (req, res) => {
   const { name } = req.body;
 
   if (!name) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       message: 'El nombre es requerido',
       responseTime: `${Date.now() - startTime}ms`
     });
@@ -269,7 +263,7 @@ app.post('/api/update-profile', verifyToken, async (req, res) => {
     });
   } catch (err) {
     console.error('Error actualizando perfil:', err);
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Error al actualizar perfil',
       error: err.message,
       responseTime: `${Date.now() - startTime}ms`
@@ -280,7 +274,7 @@ app.post('/api/update-profile', verifyToken, async (req, res) => {
 // GET /api/data - Obtener datos protegidos
 app.get('/api/data', verifyToken, (req, res) => {
   const startTime = Date.now();
-  
+
   res.status(200).json({
     message: 'Datos protegidos obtenidos exitosamente',
     userId: req.user.userId,
@@ -298,7 +292,7 @@ app.get('/api/data', verifyToken, (req, res) => {
 
 // GET /health - Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ 
+  res.status(200).json({
     status: 'Server is running',
     timestamp: new Date().toISOString(),
     mongodb: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
@@ -307,15 +301,15 @@ app.get('/health', (req, res) => {
 
 // ==================== INICIAR SERVIDOR ====================
 app.listen(PORT, () => {
-  console.log(`\n🚀 Servidor JWT + MongoDB Atlas iniciado`);
-  console.log(`📍 Puerto: ${PORT}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
-  console.log(`🔗 API Docs: http://localhost:${PORT}/\n`);
+  console.log(`\n Servidor JWT + MongoDB Atlas iniciado`);
+  console.log(` Puerto: ${PORT}`);
+  console.log(` URL: http://localhost:${PORT}`);
+  console.log(` API Docs: http://localhost:${PORT}/\n`);
 });
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  console.log('\n⏹️  Apagando servidor...');
+  console.log('\n  Apagando servidor...');
   await mongoose.connection.close();
   process.exit(0);
 });

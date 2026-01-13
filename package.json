@@ -5,7 +5,13 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "start:jwt": "node backend-jwt.js",
+    "k6:basic": "k6 run k6-scripts/carga-y-rendimiento.js",
+    "k6:auth": "k6 run k6-scripts/backend-auth.js",
+    "k6:jwt-perf": "k6 run k6-scripts/jwt-performance.js",
+    "k6:spike": "k6 run k6-scripts/spike-testing.js",
+    "k6:soak": "k6 run k6-scripts/soak-testing.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +25,11 @@
   },
   "homepage": "https://github.com/DeniseRea/Testing_K6#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.1.2"
   }
 }

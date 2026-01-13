@@ -1,0 +1,241 @@
+================================================================================
+                   ANÁLISIS COMPARATIVO DE CARGA - K6
+================================================================================
+
+FECHA DEL ANÁLISIS: 7 de Enero de 2026
+
+================================================================================
+1. TABLA COMPARATIVA DE MÉTRICAS
+================================================================================
+
+VUs  | Avg Duration (ms) | P(95) (ms)  | Failed Requests | Total Requests
+-----|-------------------|-----------  |-----------------|----------------
+100  | 279.64            | 509.24      | 0                | 2390
+150  | 940.84            | 4827.79     | 0                | 2577
+200  | 296.30            | 548.93      | 0                | 4724
+300  | 359.36            | 723.03      | 45               | 6747
+
+================================================================================
+2. DESCRIPCIÓN DE MÉTRICAS
+================================================================================
+
+VUs (Usuarios Virtuales):
+  - Número de usuarios simultáneos que acceden al sistema durante la prueba
+  - Valores probados: 100, 150, 200, 300
+
+Avg Duration (ms):
+  - Tiempo promedio de respuesta de las solicitudes HTTP
+  - Métrica clave para medir la latencia del sistema
+
+P(95) - Percentil 95 (ms):
+  - El 95% de las solicitudes se completaron en este tiempo
+  - Importante para identificar picos de latencia
+
+Failed Requests:
+  - Número de solicitudes que fallaron durante la prueba
+  - Incluye timeouts y errores de conexión
+
+Total Requests:
+  - Número total de solicitudes HTTP completadas
+
+================================================================================
+3. ANÁLISIS DETALLADO POR CARGA
+================================================================================
+
+3.1 - 100 VUs: RENDIMIENTO ÓPTIMO ✓
+  Duración Promedio: 279.64 ms
+  P(95): 509.24 ms
+  Solicitudes Fallidas: 0
+  Total de Solicitudes: 2,390
+  
+  ANÁLISIS:
+  - El sistema maneja excelentemente esta carga
+  - Tiempos de respuesta muy bajos y consistentes
+  - Sin solicitudes fallidas
+  - Baseline de rendimiento esperado
+  
+  RECOMENDACIÓN:
+  - Este es el nivel de carga recomendado para operación normal
+  - Carga segura sin degradación de servicio
+
+3.2 - 150 VUs: DEGRADACIÓN SIGNIFICATIVA ⚠️
+  Duración Promedio: 940.84 ms
+  P(95): 4827.79 ms
+  Solicitudes Fallidas: 0
+  Total de Solicitudes: 2,577
+  
+  ANÁLISIS:
+  - Aumento del 237% en duración promedio respecto a 100 VUs
+  - P(95) se dispara a 4.8 segundos (CRÍTICO)
+  - Contención de recursos del sistema
+  - Posible cuello de botella en la base de datos o conexiones
+  
+  RECOMENDACIÓN:
+  - No operar a este nivel sin optimizaciones
+  - Investigar causas de degradación
+  - Implementar escalado o caché
+
+3.3 - 200 VUs: RECUPERACIÓN PARCIAL ✓
+  Duración Promedio: 296.30 ms
+  P(95): 548.93 ms
+  Solicitudes Fallidas: 0
+  Total de Solicitudes: 4,724
+  
+  ANÁLISIS:
+  - Recuperación de performance respecto a 150 VUs
+  - P(95) vuelve a niveles aceptables
+  - Mayor throughput (4,724 vs 2,577 requests)
+  - Sistema equilibrado con mejor distribución de carga
+  
+  RECOMENDACIÓN:
+  - Este es un buen nivel de operación
+  - Mejor relación carga/throughput
+  - Implementar como nivel objetivo de escalado
+
+3.4 - 300 VUs: LÍMITE DE CAPACIDAD ❌
+  Duración Promedio: 359.36 ms
+  P(95): 723.03 ms
+  Solicitudes Fallidas: 45 (0.66%)
+  Total de Solicitudes: 6,747
+  
+  ANÁLISIS:
+  - Inicio de fallos (45 solicitudes fallidas)
+  - P(95) alcanza 723ms (degradación)
+  - Throughput máximo (6,747 requests)
+  - Sistema al límite de capacidad
+  - Tasa de error 0.66% no es aceptable en producción
+  
+  RECOMENDACIÓN:
+  - No exceder esta carga sin escalado
+  - Implementar autoscaling en este rango
+  - Aumentar recursos (CPU, memoria, conexiones BD)
+
+================================================================================
+4. ESTADÍSTICAS CONSOLIDADAS
+================================================================================
+
+Total de Solicitudes Procesadas:     16,438 requests
+Solicitudes Fallidas Total:          45 requests (0.27%)
+Tasa de Error Global:                0.27%
+
+Latencia Promedio Global:             469.04 ms
+Mejor Latencia Promedio:              279.64 ms (100 VUs)
+Peor Latencia Promedio:               940.84 ms (150 VUs)
+
+Mejor P(95):                          509.24 ms (100 VUs)
+Peor P(95):                           4827.79 ms (150 VUs)
+
+Throughput Mínimo:                    75.96 req/s (100 VUs)
+Throughput Máximo:                    215.86 req/s (300 VUs)
+
+Incremento de Throughput (100→300):   183.9%
+Degradación de Latencia (100→300):    28.6%
+
+================================================================================
+5. CONCLUSIONES Y RECOMENDACIONES
+================================================================================
+
+5.1 HALLAZGOS CLAVE:
+  ✓ Sistema estable hasta 200 VUs
+  ⚠ Punto crítico identificado entre 150-200 VUs
+  ❌ Límite absoluto en 300 VUs con fallos evidentes
+  
+  ✓ Anomalía: Mejor performance en 200 VUs que en 150 VUs
+    → Sugiere auto-scaling o equilibrio de carga dinámico
+
+5.2 RECOMENDACIONES OPERATIVAS:
+
+  CORTO PLAZO:
+  - Mantener carga máxima en 200 VUs
+  - Monitorear métricas en tiempo real
+  - Implementar alertas en P(95) > 500ms
+  
+  MEDIANO PLAZO:
+  - Investigar degradación anómala en 150 VUs
+  - Optimizar consultas de BD
+  - Aumentar pool de conexiones
+  - Implementar caché (Redis/Memcached)
+  
+  LARGO PLAZO:
+  - Arquitectura de microservicios
+  - Escalado horizontal automático
+  - CDN para contenido estático
+  - Load balancing distribuido geográficamente
+
+5.3 UMBRAL DE ACEPTABILIDAD:
+  
+  Operación Normal (≤100 VUs):
+  - P(95) < 500ms ✓
+  - Tasa de error < 0.1% ✓
+  - Recomendado para producción
+  
+  Operación Aceptable (101-200 VUs):
+  - P(95) < 600ms ✓
+  - Tasa de error < 0.1% ✓
+  - Requiere monitoreo
+  
+  Operación Crítica (201-300 VUs):
+  - P(95) > 700ms ✓
+  - Tasa de error ≥ 0.1% ⚠️
+  - Requiere escalado inmediato
+  
+  Sobrecarga (>300 VUs):
+  - P(95) > 1000ms ❌
+  - Tasa de error > 1% ❌
+  - No recomendado sin optimización
+
+================================================================================
+6. ARCHIVOS GENERADOS
+================================================================================
+
+Tablas de Datos:
+  - metricas-comparativas.txt     [Tabla de datos numéricos]
+
+Gráficos Visuales:
+  - metricas-comparativas.png     [4 gráficos comparativos principales]
+  - distribucion-duraciones.png   [Distribución de tiempos de respuesta]
+
+Informe HTML:
+  - analisis-completo.html        [Informe visual interactivo]
+
+Archivos de Prueba (JSON):
+  - test-100-vus.json             [Datos crudos 100 VUs]
+  - test-150-vus.json             [Datos crudos 150 VUs]
+  - test-200-vus.json             [Datos crudos 200 VUs]
+  - test-300-vus.json             [Datos crudos 300 VUs]
+
+Scripts de Análisis:
+  - process-metrics.py            [Extrae métricas de JSON]
+  - generate-charts.py            [Genera gráficos PNG]
+
+================================================================================
+7. PRÓXIMOS PASOS
+================================================================================
+
+1. VALIDACIÓN:
+   □ Repetir pruebas en horarios pico
+   □ Realizar pruebas de stress test (400-500 VUs)
+   □ Pruebas de soak testing (carga sostenida 24h)
+
+2. OPTIMIZACIÓN:
+   □ Perfilar código de backend
+   □ Optimizar consultas SQL
+   □ Implementar índices de BD
+
+3. ESCALADO:
+   □ Configurar autoscaling
+   □ Implementar load balancing
+   □ Aumentar recursos del servidor
+
+4. MONITOREO:
+   □ Alertas automáticas
+   □ Dashboards en tiempo real
+   □ Logs estructurados
+
+================================================================================
+FIN DEL INFORME
+================================================================================
+Generado: 7 de Enero de 2026
+Versión: 1.0
+Estado: COMPLETADO ✓
+================================================================================

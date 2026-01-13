@@ -1,0 +1,44 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Introducción}{3}{section.1}%
+\contentsline {section}{\numberline {2}Objetivos}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Objetivo General}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Objetivos Específicos}{3}{subsection.2.2}%
+\contentsline {section}{\numberline {3}Marco Teórico}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Pruebas de Carga}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Pruebas de Rendimiento}{4}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}K6}{4}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}JWT (JSON Web Tokens)}{4}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Materiales y Equipos}{5}{section.4}%
+\contentsline {section}{\numberline {5}Desarrollo de la Práctica}{5}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Parte 1: Establecimiento del Ambiente de Pruebas}{5}{subsection.5.1}%
+\contentsline {subsubsection}{\numberline {5.1.1}Paso 1: Creación de API Sencilla (server.js)}{5}{subsubsection.5.1.1}%
+\contentsline {subsubsection}{\numberline {5.1.2}Paso 2: Instalación de Dependencias}{6}{subsubsection.5.1.2}%
+\contentsline {subsubsection}{\numberline {5.1.3}Paso 3: Instalación de K6}{7}{subsubsection.5.1.3}%
+\contentsline {subsubsection}{\numberline {5.1.4}Paso 4: Creación de Script de Prueba con K6}{7}{subsubsection.5.1.4}%
+\contentsline {subsection}{\numberline {5.2}Parte 2: Realizar Pruebas con K6}{8}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Paso 1: Ejecución de las Pruebas de Carga}{8}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Paso 2: Interpretación de Métricas}{10}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Paso 3: Cambio en la Configuración del Test}{10}{subsubsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.3}Parte 3: Pruebas de Carga y Rendimiento a un Backend Completo}{13}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Paso 1: Backend con JWT y MongoDB Atlas}{13}{subsubsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.2}Paso 2: Verificación de Endpoints de API Simple}{15}{subsubsection.5.3.2}%
+\contentsline {subsubsection}{\numberline {5.3.3}Paso 3: Verificación de Endpoints de Autenticación}{17}{subsubsection.5.3.3}%
+\contentsline {subsubsection}{\numberline {5.3.4}Paso 4: Ejecución del Script de Pruebas}{18}{subsubsection.5.3.4}%
+\contentsline {section}{\numberline {6}Sección de Preguntas/Actividades}{19}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Actividad 1: Pruebas con POST /api/data enviando JSON}{19}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Actividad 2: Pruebas Concurrentes GET y POST}{19}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Actividad 3: Soak Testing (Larga Duración)}{20}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Actividad 4: Spike Testing (Pico Súbito)}{20}{subsection.6.4}%
+\contentsline {section}{\numberline {7}Resultados Obtenidos}{20}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Análisis Comparativo de Métricas}{20}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Visualización de Resultados}{21}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Análisis por Nivel de Carga}{22}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Métricas Globales}{23}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Anomalía Detectada}{23}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Matriz de Decisión para Producción}{23}{subsection.7.6}%
+\contentsline {section}{\numberline {8}Análisis de Resultados}{23}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Comportamiento del Sistema bajo Carga}{23}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Comparación entre API Simple y Backend Completo}{24}{subsection.8.2}%
+\contentsline {section}{\numberline {9}Conclusiones}{24}{section.9}%
+\contentsline {section}{\numberline {10}Recomendaciones}{24}{section.10}%
+\contentsline {section}{\numberline {11}Referencias Bibliográficas}{25}{section.11}%

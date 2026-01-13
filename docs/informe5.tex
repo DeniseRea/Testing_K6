@@ -1,0 +1,702 @@
+%=============================================
+% INFORME DE LABORATORIO - PRÁCTICA N° 5
+% Pruebas de Carga y Rendimiento con K6
+% Universidad de las Fuerzas Armadas ESPE - Santo Domingo
+%=============================================
+
+\documentclass[12pt,a4paper]{article}
+
+%--- Paquetes esenciales ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{parskip}
+\usepackage{setspace}
+
+\tcbuselibrary{listings,skins,breakable}
+
+%--- Configuración de página ---
+\geometry{
+    top=2.5cm,
+    bottom=2.5cm,
+    left=2.5cm,
+    right=2.5cm,
+    headheight=14pt
+}
+
+%--- Definición de colores personalizados ---
+\definecolor{espeGreen}{RGB}{0, 102, 51}
+\definecolor{espeGold}{RGB}{184, 134, 11}
+\definecolor{darkBlue}{RGB}{0, 51, 102}
+\definecolor{lightGray}{RGB}{248, 249, 250}
+
+% Colores para código estilo Atom One Dark
+\definecolor{codeBg}{RGB}{40, 44, 52}
+\definecolor{codeText}{RGB}{171, 178, 191}
+\definecolor{codeKeyword}{RGB}{198, 120, 221}
+\definecolor{codeString}{RGB}{152, 195, 121}
+\definecolor{codeComment}{RGB}{92, 99, 112}
+\definecolor{codeNumber}{RGB}{209, 154, 102}
+\definecolor{codeFunction}{RGB}{97, 175, 239}
+\definecolor{codeBorder}{RGB}{62, 68, 81}
+
+% Colores para resultados
+\definecolor{successGreen}{RGB}{40, 167, 69}
+\definecolor{warningYellow}{RGB}{255, 193, 7}
+\definecolor{dangerRed}{RGB}{220, 53, 69}
+
+%--- Configuración de hipervínculos ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=darkBlue,
+    urlcolor=espeGreen,
+    citecolor=espeGreen,
+    pdftitle={Informe de Laboratorio - Pruebas de Carga y Rendimiento con K6},
+    pdfauthor={Mesias Mariscal, Denise Rea, Julio Viche}
+}
+
+%--- Caja para resultados ---
+\newtcolorbox{resultbox}[1][]{
+    enhanced,
+    breakable,
+    colback=lightGray,
+    colframe=successGreen,
+    arc=4pt,
+    boxrule=2pt,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt,
+    fonttitle=\bfseries,
+    title=#1,
+    coltitle=white,
+    attach boxed title to top left={yshift=-2mm, xshift=10pt},
+    boxed title style={colback=successGreen, arc=3pt, boxrule=0pt}
+}
+
+%--- Configuración de encabezados y pies ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{espeGreen}{Universidad de las Fuerzas Armadas ESPE - Matriz}}
+\fancyhead[R]{\small\textcolor{darkBlue}{Pruebas de Software}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+%--- Formato de títulos ---
+\titleformat{\section}
+    {\normalfont\Large\bfseries\color{espeGreen}}
+    {\thesection.}{0.5em}{}
+    [\titlerule]
+
+\titleformat{\subsection}
+    {\normalfont\large\bfseries\color{darkBlue}}
+    {\thesubsection.}{0.5em}{}
+
+\titleformat{\subsubsection}
+    {\normalfont\normalsize\bfseries\color{darkBlue}}
+    {\thesubsubsection.}{0.5em}{}
+
+%=============================================
+% INICIO DEL DOCUMENTO
+%=============================================
+\begin{document}
+
+%--- Portada ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    {\Large\bfseries\textcolor{espeGreen}{UNIVERSIDAD DE LAS FUERZAS ARMADAS ESPE}}\\[0.3cm]
+    {\large\textcolor{darkBlue}{Sede Matriz Sangolquí}}\\[0.2cm]
+    {\normalsize Departamento de Ciencias de la Computación}\\[0.2cm]
+    {\normalsize Carrera de Ingeniería de Software}\\[1.5cm]
+    
+    \rule{\textwidth}{1.5pt}\\[0.4cm]
+    {\Huge\bfseries\textcolor{darkBlue}{INFORME DE LABORATORIO}}\\[0.2cm]
+    {\LARGE\textcolor{espeGreen}{Práctica N° 5}}\\[0.2cm]
+    \rule{\textwidth}{1.5pt}\\[1cm]
+    
+    {\Large\bfseries Pruebas de Carga y Rendimiento}\\[0.5cm]
+    {\large Uso de K6 para Simulación de Usuarios Concurrentes}\\[2cm]
+    
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushleft}
+            {\bfseries\textcolor{espeGreen}{Asignatura:}}\\
+            Pruebas de Software\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{Docente:}}\\
+            Ing. Enrique Calvopiña, Mgtr.\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{NRC:}}\\
+            22431
+        \end{flushleft}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushright}
+            {\bfseries\textcolor{espeGreen}{Integrantes:}}\\
+            Mesias Mariscal\\
+            Denise Rea\\
+            Julio Viche\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{Nivel:}}\\
+            6to Semestre\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{Período:}}\\
+            202550
+        \end{flushright}
+    \end{minipage}\\[2cm]
+    
+    {\bfseries\textcolor{espeGreen}{Laboratorio:}} H-205\\[1cm]
+    
+    \vfill
+    {\large Enero 2026}
+\end{titlepage}
+
+%--- Índice ---
+\tableofcontents
+\newpage
+
+%=============================================
+% SECCIÓN 1: INTRODUCCIÓN
+%=============================================
+\section{Introducción}
+
+Este laboratorio tiene como objetivo aplicar pruebas de carga y rendimiento a dos niveles de complejidad: primero, a una API REST sencilla que responde con un mensaje básico, y luego a un backend completo que incluye autenticación de usuarios con JWT y acceso a base de datos MongoDB Atlas.
+
+Para la ejecución de las pruebas se utilizó la herramienta \textbf{k6}, desarrollada por Grafana Labs, que permite simular múltiples usuarios concurrentes enviando peticiones de manera controlada. A través de estas pruebas, se pudo observar cómo se comportan distintos tipos de servicios ante escenarios de uso intensivo, evaluando métricas como:
+
+\begin{itemize}[leftmargin=2cm]
+    \item \textbf{Latencia (http\_req\_duration):} Tiempo de respuesta de las solicitudes HTTP.
+    \item \textbf{Tasa de errores (http\_req\_failed):} Porcentaje de solicitudes fallidas.
+    \item \textbf{Throughput (http\_reqs):} Número total de solicitudes procesadas por segundo.
+    \item \textbf{Usuarios virtuales (vus):} Cantidad de usuarios simulados concurrentemente.
+\end{itemize}
+
+%=============================================
+% SECCIÓN 2: OBJETIVOS
+%=============================================
+\section{Objetivos}
+
+\subsection{Objetivo General}
+Realizar pruebas de carga y rendimiento a una API REST y a un backend completo con autenticación JWT utilizando la herramienta k6, evaluando el comportamiento del sistema bajo diferentes escenarios de estrés.
+
+\subsection{Objetivos Específicos}
+\begin{enumerate}[leftmargin=2cm]
+    \item Realizar pruebas de carga a una API REST con k6.
+    \item Evaluar el rendimiento del servidor bajo diferentes escenarios de estrés.
+    \item Interpretar métricas como tiempo de respuesta, tasa de errores y throughput.
+    \item Comparar resultados en diferentes configuraciones (100, 150, 200 y 300 VUs).
+    \item Implementar pruebas especializadas como soak testing y spike testing.
+\end{enumerate}
+
+%=============================================
+% SECCIÓN 3: MARCO TEÓRICO
+%=============================================
+\section{Marco Teórico}
+
+\subsection{Pruebas de Carga}
+Las pruebas de carga son un tipo de prueba de rendimiento que evalúa el comportamiento de un sistema bajo una carga de trabajo esperada. El objetivo principal es identificar cuellos de botella de rendimiento antes de que la aplicación entre en producción.
+
+\subsection{Pruebas de Rendimiento}
+Las pruebas de rendimiento miden la velocidad, escalabilidad y estabilidad de una aplicación. Incluyen varios tipos:
+\begin{itemize}[leftmargin=2cm]
+    \item \textbf{Load Testing:} Prueba con carga normal esperada.
+    \item \textbf{Stress Testing:} Prueba más allá de los límites normales.
+    \item \textbf{Soak Testing:} Prueba de larga duración con carga constante.
+    \item \textbf{Spike Testing:} Prueba con picos súbitos de carga.
+\end{itemize}
+
+\subsection{K6}
+K6 es una herramienta de código abierto para pruebas de carga y rendimiento, diseñada para desarrolladores. Permite escribir scripts en JavaScript y proporciona métricas detalladas sobre el comportamiento del sistema bajo prueba. Características principales:
+\begin{itemize}[leftmargin=2cm]
+    \item Scripts escritos en JavaScript (ES6+).
+    \item Métricas integradas y personalizables.
+    \item Thresholds para definir criterios de éxito/fallo.
+    \item Soporte para múltiples protocolos (HTTP, WebSocket, gRPC).
+\end{itemize}
+
+\subsection{JWT (JSON Web Tokens)}
+JWT es un estándar abierto (RFC 7519) para la transmisión segura de información entre partes como un objeto JSON. En el contexto de APIs, se utiliza para:
+\begin{itemize}[leftmargin=2cm]
+    \item Autenticación de usuarios.
+    \item Autorización de acceso a recursos protegidos.
+    \item Transmisión segura de claims entre cliente y servidor.
+\end{itemize}
+
+%=============================================
+% SECCIÓN 4: MATERIALES Y EQUIPOS
+%=============================================
+\section{Materiales y Equipos}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|p{4cm}|p{10cm}|}
+        \hline
+        \textbf{Categoría} & \textbf{Descripción} \\
+        \hline\hline
+        Sistema Operativo & Windows 10 o superior \\
+        \hline
+        Hardware & Procesador Intel Core i7-6700T o superior, 12GB RAM, 480GB SSD \\
+        \hline
+        Software & Node.js, Visual Studio Code, Git, MongoDB, Chocolatey \\
+        \hline
+        Herramientas & K6, Postman, MongoDB Atlas \\
+        \hline
+        Dependencias & Express, mongoose, bcryptjs, jsonwebtoken, cors, dotenv \\
+        \hline
+        Conectividad & Acceso a Internet \\
+        \hline
+    \end{tabular}
+    \caption{Materiales y equipos utilizados en la práctica}
+\end{table}
+
+%=============================================
+% SECCIÓN 5: DESARROLLO DE LA PRÁCTICA
+%=============================================
+\section{Desarrollo de la Práctica}
+
+\subsection{Parte 1: Establecimiento del Ambiente de Pruebas}
+
+\subsubsection{Paso 1: Creación de API Sencilla (server.js)}
+
+Se creó un servidor Express básico con endpoints de prueba que incluyen retardos aleatorios para simular condiciones realistas:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/server.png}
+    \caption{Código fuente del servidor API (server.js) en Visual Studio Code}
+    \label{fig:server-code}
+\end{figure}
+
+\subsubsection{Paso 2: Instalación de Dependencias}
+
+Se configuró el proyecto con las dependencias necesarias utilizando npm:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/paso2.png}
+    \caption{Ejecución del comando npm init -y para crear package.json}
+    \label{fig:npm-init}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/paso2_1.png}
+    \caption{Respuesta JSON de la API al acceder a la ruta raíz (Welcome to K6 Testing API)}
+    \label{fig:api-welcome}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../images/paso_2_5.png}
+    \caption{Respuesta del endpoint GET /api/test mostrando mensaje exitoso y delay}
+    \label{fig:api-test-response}
+\end{figure}
+
+\subsubsection{Paso 3: Instalación de K6}
+
+K6 se instaló utilizando Chocolatey en Windows:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/paso_3.png}
+    \caption{Instalación de K6 mediante Chocolatey (choco install k6) y verificación de versión}
+    \label{fig:k6-install}
+\end{figure}
+
+\subsubsection{Paso 4: Creación de Script de Prueba con K6}
+
+Se creó el archivo \texttt{carga-y-rendimiento.js} con la configuración de pruebas:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../images/code_carga-rendimiento.png}
+    \caption{Código fuente del script K6 carga-y-rendimiento.js con stages y thresholds}
+    \label{fig:k6-script-code}
+\end{figure}
+
+\subsection{Parte 2: Realizar Pruebas con K6}
+
+\subsubsection{Paso 1: Ejecución de las Pruebas de Carga}
+
+Se ejecutaron las pruebas con el comando \texttt{k6 run carga-y-rendimiento.js}:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/testing_carga-rendmiento_1.png}
+    \caption{Ejecución de pruebas K6 con 300 VUs mostrando thresholds y resultados iniciales}
+    \label{fig:k6-test-300vus}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/testing_carga-rendmiento_2.png}
+    \caption{Resultados detallados: métricas HTTP, tiempos de respuesta y estadísticas de red}
+    \label{fig:k6-test-metrics}
+\end{figure}
+
+\subsubsection{Paso 2: Interpretación de Métricas}
+
+Las métricas principales obtenidas fueron:
+\begin{itemize}[leftmargin=2cm]
+    \item \textbf{http\_req\_duration:} Muestra la latencia (rendimiento del servidor).
+    \item \textbf{http\_req\_failed:} Evidencia errores bajo carga (robustez del sistema).
+    \item \textbf{http\_reqs:} Número total de solicitudes realizadas.
+    \item \textbf{vus:} Usuarios virtuales simulados (nivel de carga).
+\end{itemize}
+
+\subsubsection{Paso 3: Cambio en la Configuración del Test}
+
+Se ejecutaron pruebas con diferentes parámetros (100, 150, 200 y 300 VUs) para comparar el comportamiento del sistema:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/cambio-stages-carga-rendimiento.png}
+    \caption{Modificación del script: configuración de stages con 100 VUs máximo}
+    \label{fig:stages-config-100}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/cambio-stages-carga-rendimiento-testing1.png}
+    \caption{Ejecución de pruebas K6 con 100 VUs: thresholds y resultados totales}
+    \label{fig:k6-test-100vus}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/cambio-stages-carga-rendimiento-testing2.png}
+    \caption{Métricas detalladas con 100 VUs: HTTP duration, iterations y network stats}
+    \label{fig:k6-test-100vus-detail}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/paso_3_usando_variables_entorno.png}
+    \caption{Ejecución de K6 con variables de entorno (VUs=150, DURATION=60s)}
+    \label{fig:k6-env-vars}
+\end{figure}
+
+\subsection{Parte 3: Pruebas de Carga y Rendimiento a un Backend Completo}
+
+\subsubsection{Paso 1: Backend con JWT y MongoDB Atlas}
+
+Se implementó un backend completo con autenticación JWT y conexión a MongoDB Atlas:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/code_backend.png}
+    \caption{Código fuente del backend backend-jwt.js con Express, Mongoose y JWT}
+    \label{fig:backend-code}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/conexion-backend.png}
+    \caption{Servidor JWT + MongoDB Atlas iniciado exitosamente en puerto 3000}
+    \label{fig:backend-running}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../images/atlas.png}
+    \caption{Configuración de usuario de base de datos en MongoDB Atlas (k6-testing)}
+    \label{fig:atlas-user}
+\end{figure}
+
+\subsubsection{Paso 2: Verificación de Endpoints de API Simple}
+
+Se verificaron los endpoints de la API simple utilizando Postman con datos de cada integrante:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../images/testing_endpoint1.png}
+    \caption{POST /api/data - Prueba con datos de Denise Noemi Rea Díaz}
+    \label{fig:test-denise}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../images/testing_endpoint2.png}
+    \caption{POST /api/data - Prueba con datos de Julio Enrique Viche Castillo}
+    \label{fig:test-julio}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../images/testing_endpoint3.png}
+    \caption{POST /api/data - Prueba con datos de Mesias Orlando Mariscal Oña}
+    \label{fig:test-mesias}
+\end{figure}
+
+\subsubsection{Paso 3: Verificación de Endpoints de Autenticación}
+
+Se verificaron los endpoints de autenticación del backend JWT:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/testing_endpoint_register.png}
+    \caption{POST /auth/register - Registro exitoso de usuario (Status 201 Created)}
+    \label{fig:test-register}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/testing_endpoint_login.png}
+    \caption{POST /auth/login - Login exitoso con generación de token JWT}
+    \label{fig:test-login}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/testing_endpoint_register-Atlas.png}
+    \caption{Colección de usuarios en MongoDB Atlas con registros de Julio Viche y Juan Pérez}
+    \label{fig:atlas-users}
+\end{figure}
+
+\subsubsection{Paso 4: Ejecución del Script de Pruebas}
+
+Se ejecutaron pruebas de carga al backend completo con autenticación JWT:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/testing-backend-completo.png}
+    \caption{Resultados K6 backend-completo.js: 100 VUs, 78736 checks con 25\% de fallos}
+    \label{fig:testing-backend}
+\end{figure}
+
+%=============================================
+% SECCIÓN 6: ACTIVIDADES ADICIONALES
+%=============================================
+\section{Sección de Preguntas/Actividades}
+
+\subsection{Actividad 1: Pruebas con POST /api/data enviando JSON}
+
+Se implementó y verificó el endpoint POST /api/data con datos JSON de cada integrante del equipo (ver Figuras \ref{fig:test-denise}, \ref{fig:test-julio} y \ref{fig:test-mesias}).
+
+\subsection{Actividad 2: Pruebas Concurrentes GET y POST}
+
+Se ejecutaron pruebas concurrentes combinando solicitudes GET y POST:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../images/testing-concurrente.png}
+    \caption{Resultados K6 concurrente-get-post.js: pruebas GET /api/test, POST /api/data y GET /health}
+    \label{fig:concurrent-test}
+\end{figure}
+
+\subsection{Actividad 3: Soak Testing (Larga Duración)}
+
+Se implementó un script de soak testing para detectar memory leaks y degradación del rendimiento durante pruebas de larga duración (30 minutos con 30 usuarios virtuales).
+
+\subsection{Actividad 4: Spike Testing (Pico Súbito)}
+
+Se implementó un script de spike testing para evaluar el comportamiento del sistema ante picos súbitos de carga (de 5 a 500 usuarios en 5 segundos).
+
+%=============================================
+% SECCIÓN 7: RESULTADOS OBTENIDOS
+%=============================================
+\section{Resultados Obtenidos}
+
+\subsection{Análisis Comparativo de Métricas}
+
+Se ejecutaron pruebas con diferentes niveles de usuarios virtuales (VUs) para analizar el comportamiento del sistema:
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{VUs} & \textbf{Avg Duration (ms)} & \textbf{P(95) (ms)} & \textbf{Failed Requests} & \textbf{Total Requests} \\
+        \hline\hline
+        100 & 279.64 & 509.24 & 0 & 2,390 \\
+        \hline
+        150 & 940.84 & 4,827.79 & 0 & 2,577 \\
+        \hline
+        200 & 296.30 & 548.93 & 0 & 4,724 \\
+        \hline
+        300 & 359.36 & 723.03 & 45 & 6,747 \\
+        \hline
+    \end{tabular}
+    \caption{Tabla comparativa de métricas por nivel de carga}
+\end{table}
+
+\subsection{Visualización de Resultados}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../results/metricas-comparativas.png}
+    \caption{Gráficos comparativos: Duración promedio, Percentil 95, Solicitudes fallidas y Total de solicitudes}
+    \label{fig:metricas-comparativas}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../results/distribucion-duraciones.png}
+    \caption{Distribución de tiempos de respuesta para cada nivel de VUs}
+    \label{fig:distribucion-duraciones}
+\end{figure}
+
+\subsection{Análisis por Nivel de Carga}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|c|l|p{8cm}|}
+        \hline
+        \textbf{VUs} & \textbf{Estado} & \textbf{Observaciones} \\
+        \hline\hline
+        100 & \textcolor{successGreen}{\textbf{Óptimo}} & Sistema operando sin degradación. Baseline recomendado. \\
+        \hline
+        150 & \textcolor{warningYellow}{\textbf{Degradación}} & +237\% en duración promedio. Contención de recursos detectada. \\
+        \hline
+        200 & \textcolor{successGreen}{\textbf{Aceptable}} & Recuperación parcial. Throughput máximo: 4,724 requests. \\
+        \hline
+        300 & \textcolor{dangerRed}{\textbf{Límite}} & 45 fallos (0.66\%). Sistema en límite máximo de capacidad. \\
+        \hline
+    \end{tabular}
+    \caption{Análisis de estado del sistema por nivel de carga}
+\end{table}
+
+\subsection{Métricas Globales}
+
+\begin{resultbox}[Resumen de Metricas Globales]
+\begin{itemize}
+    \item \textbf{Total Solicitudes Procesadas:} 16,438
+    \item \textbf{Tasa de Error Global:} 0.27\% (solo en 300 VUs)
+    \item \textbf{Throughput Máximo:} 215.86 req/s (300 VUs)
+    \item \textbf{Mejor Latencia:} 279.64 ms (100 VUs)
+\end{itemize}
+\end{resultbox}
+
+\subsection{Anomalía Detectada}
+
+Durante las pruebas se detectó una anomalía interesante: el rendimiento con 200 VUs fue mejor que con 150 VUs. Esto sugiere:
+\begin{itemize}[leftmargin=2cm]
+    \item Posible auto-balancing del sistema.
+    \item Redistribución de carga por parte del sistema operativo.
+    \item Requiere investigación adicional para entender el comportamiento.
+\end{itemize}
+
+\subsection{Matriz de Decisión para Producción}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|c|c|c|c|p{4cm}|}
+        \hline
+        \textbf{Carga (VUs)} & \textbf{Latencia} & \textbf{Confiabilidad} & \textbf{Producción} & \textbf{Observaciones} \\
+        \hline\hline
+        0-100 & Excelente & 100\% & \textcolor{successGreen}{SÍ} & Configuración recomendada \\
+        \hline
+        100-200 & Buena & 99.9\%+ & \textcolor{successGreen}{SÍ} & Requiere monitoreo \\
+        \hline
+        200-300 & Aceptable & 99.3\% & \textcolor{warningYellow}{CONDICIONAL} & Necesario escalado \\
+        \hline
+        >300 & Inaceptable & <99\% & \textcolor{dangerRed}{NO} & Requiere rediseño \\
+        \hline
+    \end{tabular}
+    \caption{Matriz de decisión para despliegue en producción}
+\end{table}
+
+%=============================================
+% SECCIÓN 8: ANÁLISIS DE RESULTADOS
+%=============================================
+\section{Análisis de Resultados}
+
+\subsection{Comportamiento del Sistema bajo Carga}
+
+Los resultados demuestran un comportamiento no lineal del sistema ante el incremento de carga:
+
+\begin{enumerate}[leftmargin=2cm]
+    \item \textbf{Zona de operación óptima (0-100 VUs):} El sistema mantiene latencias consistentes menores a 300ms con 100\% de disponibilidad.
+    
+    \item \textbf{Punto de inflexión (150 VUs):} Se produce una degradación significativa del 237\% en tiempo de respuesta, indicando saturación de recursos.
+    
+    \item \textbf{Recuperación anómala (200 VUs):} El sistema se estabiliza, posiblemente por optimizaciones del runtime de Node.js o del sistema operativo.
+    
+    \item \textbf{Límite de capacidad (300 VUs):} Aparecen los primeros fallos (0.66\%), indicando que el sistema ha alcanzado su límite.
+\end{enumerate}
+
+\subsection{Comparación entre API Simple y Backend Completo}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Característica} & \textbf{API Simple} & \textbf{Backend JWT} \\
+        \hline\hline
+        Tiempo de respuesta promedio & ~250-350ms & ~400-600ms \\
+        \hline
+        Capacidad máxima VUs & 300+ & 50-100 \\
+        \hline
+        Complejidad de operación & Baja & Alta \\
+        \hline
+        Dependencias externas & Ninguna & MongoDB, bcrypt \\
+        \hline
+    \end{tabular}
+    \caption{Comparación de rendimiento entre los dos backends}
+\end{table}
+
+%=============================================
+% SECCIÓN 9: CONCLUSIONES
+%=============================================
+\section{Conclusiones}
+
+\textbf{En primer lugar}, las pruebas realizadas con K6 permitieron identificar los límites de capacidad del sistema antes de su despliegue en producción. Se determinó que el sistema puede manejar hasta 200 usuarios virtuales concurrentes de manera estable, con degradación significativa a partir de 300 VUs.
+
+\textbf{Por otro lado}, el backend con autenticación JWT y MongoDB mostró tiempos de respuesta un 60-100\% mayores que la API simple, debido al overhead de las operaciones criptográficas (bcrypt) y las consultas a base de datos. Esto evidencia el impacto que tiene la autenticación en el rendimiento general del sistema.
+
+\textbf{Además}, mediante el análisis de métricas como P(95) y tasa de errores, se identificó el punto de saturación del sistema en 150 VUs, lo cual permitiría planificar estrategias de escalado antes de que surjan problemas en producción.
+
+\textbf{Finalmente}, K6 demostró ser una herramienta poderosa y flexible para pruebas de rendimiento, permitiendo simular diferentes escenarios (load, stress, soak, spike) con scripts en JavaScript de manera sencilla y eficiente.
+
+%=============================================
+% SECCIÓN 10: RECOMENDACIONES
+%=============================================
+\section{Recomendaciones}
+
+Sería muy útil configurar alertas que nos avisen automáticamente cuando los tiempos de respuesta empiecen a subir demasiado (por ejemplo, cuando el P(95) pase de 500ms). Esta práctica es altamente recomendable para actuar antes de que los usuarios noten problemas.
+
+Como las consultas a MongoDB pueden volverse lentas bajo carga, es aconsejable implementar Redis u otra herramienta de caché. Esto ayudaría especialmente en endpoints como el de perfil de usuario, que se consultan muchas veces.
+
+Si en el futuro necesitamos soportar más de 200 usuarios concurrentes, valdría la pena considerar un balanceador de carga con varias instancias del servidor. De esta manera, la carga se distribuiría mejor entre varios nodos, lo cual es una estrategia ampliamente sugerida en arquitecturas de alta disponibilidad.
+
+Por último, es importante programar pruebas de soak testing cada cierto tiempo. Esta práctica es recomendable porque nos permitiría detectar problemas como fugas de memoria o degradación gradual del rendimiento, que no se notan en pruebas cortas.
+
+%=============================================
+% SECCIÓN 11: REFERENCIAS
+%=============================================
+\section{Referencias Bibliográficas}
+
+\begin{enumerate}[leftmargin=1cm]
+    \item Grafana Labs. (2024). \textit{K6 Documentation - Load Testing Tool}. Recuperado de: \url{https://k6.io/docs/}
+    
+    \item Express.js. (2024). \textit{Express - Node.js web application framework}. Recuperado de: \url{https://expressjs.com/}
+    
+    \item MongoDB. (2024). \textit{MongoDB Atlas Documentation}. Recuperado de: \url{https://www.mongodb.com/docs/atlas/}
+    
+    \item Auth0. (2024). \textit{JSON Web Tokens - Introduction}. Recuperado de: \url{https://jwt.io/introduction/}
+    
+    \item Node.js. (2024). \textit{Node.js Documentation}. Recuperado de: \url{https://nodejs.org/docs/}
+    
+    \item Chocolatey. (2024). \textit{Chocolatey - The Package Manager for Windows}. Recuperado de: \url{https://chocolatey.org/}
+\end{enumerate}
+
+\end{document}

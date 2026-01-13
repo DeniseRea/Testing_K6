@@ -1,0 +1,879 @@
+%=============================================
+% INFORME DE LABORATORIO - VERIFICACIÓN Y VALIDACIÓN
+% Pruebas de Software - Universidad de las Fuerzas Armadas ESPE
+%=============================================
+
+\documentclass[12pt,a4paper]{article}
+
+%--- Paquetes esenciales ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{parskip}
+\usepackage{setspace}
+
+\tcbuselibrary{listings,skins,breakable}
+
+%--- Configuración de página ---
+\geometry{
+    top=2.5cm,
+    bottom=2.5cm,
+    left=2.5cm,
+    right=2.5cm,
+    headheight=14pt
+}
+
+%--- Definición de colores personalizados ---
+\definecolor{espeGreen}{RGB}{0, 102, 51}
+\definecolor{espeGold}{RGB}{184, 134, 11}
+\definecolor{darkBlue}{RGB}{0, 51, 102}
+\definecolor{lightGray}{RGB}{248, 249, 250}
+
+% Colores para código estilo Atom One Dark
+\definecolor{codeBg}{RGB}{40, 44, 52}
+\definecolor{codeText}{RGB}{171, 178, 191}
+\definecolor{codeKeyword}{RGB}{198, 120, 221}
+\definecolor{codeString}{RGB}{152, 195, 121}
+\definecolor{codeComment}{RGB}{92, 99, 112}
+\definecolor{codeNumber}{RGB}{209, 154, 102}
+\definecolor{codeFunction}{RGB}{97, 175, 239}
+\definecolor{codeBorder}{RGB}{62, 68, 81}
+
+% Colores para resultados
+\definecolor{successGreen}{RGB}{40, 167, 69}
+\definecolor{warningYellow}{RGB}{255, 193, 7}
+
+%--- Configuración de hipervínculos ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=darkBlue,
+    urlcolor=espeGreen,
+    citecolor=espeGreen,
+    pdftitle={Informe de Laboratorio - Verificación y Validación},
+    pdfauthor={Mesias Mariscal, Denise Rea, Julio Viche}
+}
+
+%--- Configuración de listings para código ---
+\lstdefinestyle{onedark}{
+    backgroundcolor=\color{codeBg},
+    basicstyle=\ttfamily\footnotesize\color{codeText},
+    keywordstyle=\color{codeKeyword}\bfseries,
+    stringstyle=\color{codeString},
+    commentstyle=\color{codeComment}\itshape,
+    numberstyle=\tiny\color{codeComment},
+    numbers=left,
+    numbersep=12pt,
+    stepnumber=1,
+    tabsize=2,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=none,
+    breaklines=true,
+    breakatwhitespace=true,
+    xleftmargin=20pt,
+    xrightmargin=10pt,
+    aboveskip=0pt,
+    belowskip=0pt,
+    escapeinside={(*@}{@*)},
+    literate=
+        {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+        {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+        {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {ü}{{\"u}}1 {Ü}{{\"U}}1
+}
+
+\lstdefinelanguage{JavaScript}{
+    keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with, const, let, async, await, class, export, import, module, require, extends, static, get, set, of},
+    sensitive=true,
+    morecomment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]',
+    morestring=[b]"
+}
+
+%--- Cajas de código personalizadas ---
+\newtcolorbox{codebox}[1][]{
+    enhanced,
+    breakable,
+    colback=codeBg,
+    colframe=codeBorder,
+    arc=4pt,
+    boxrule=1pt,
+    left=5pt,
+    right=5pt,
+    top=8pt,
+    bottom=8pt,
+    fonttitle=\bfseries\color{white},
+    title=#1,
+    coltitle=codeText,
+    attach boxed title to top left={yshift=-2mm, xshift=10pt},
+    boxed title style={colback=espeGreen, arc=3pt, boxrule=0pt}
+}
+
+%--- Caja para resultados ---
+\newtcolorbox{resultbox}[1][]{
+    enhanced,
+    breakable,
+    colback=lightGray,
+    colframe=successGreen,
+    arc=4pt,
+    boxrule=2pt,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt,
+    fonttitle=\bfseries,
+    title=#1,
+    coltitle=white,
+    attach boxed title to top left={yshift=-2mm, xshift=10pt},
+    boxed title style={colback=successGreen, arc=3pt, boxrule=0pt}
+}
+
+%--- Configuración de encabezados y pies ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{espeGreen}{Universidad de las Fuerzas Armadas ESPE}}
+\fancyhead[R]{\small\textcolor{darkBlue}{Pruebas de Software}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+%--- Formato de títulos ---
+\titleformat{\section}
+    {\normalfont\Large\bfseries\color{espeGreen}}
+    {\thesection.}{0.5em}{}
+    [\titlerule]
+
+\titleformat{\subsection}
+    {\normalfont\large\bfseries\color{darkBlue}}
+    {\thesubsection.}{0.5em}{}
+
+\titleformat{\subsubsection}
+    {\normalfont\normalsize\bfseries\color{darkBlue}}
+    {\thesubsubsection.}{0.5em}{}
+
+%=============================================
+% INICIO DEL DOCUMENTO
+%=============================================
+\begin{document}
+
+%--- Portada ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    {\Large\bfseries\textcolor{espeGreen}{UNIVERSIDAD DE LAS FUERZAS ARMADAS ESPE}}\\[0.3cm]
+    {\large\textcolor{darkBlue}{Departamento de Ciencias de la Computación}}\\[0.2cm]
+    {\normalsize Carrera de Ingeniería de Software}\\[1.5cm]
+    
+    \rule{\textwidth}{1.5pt}\\[0.4cm]
+    {\Huge\bfseries\textcolor{darkBlue}{INFORME DE LABORATORIO}}\\[0.2cm]
+    {\LARGE\textcolor{espeGreen}{Práctica N° 2}}\\[0.2cm]
+    \rule{\textwidth}{1.5pt}\\[1cm]
+    
+    {\Large\bfseries Verificación y Validación}\\[0.5cm]
+    {\large API REST para Gestión de Usuarios con Node.js}\\[2cm]
+    
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushleft}
+            {\bfseries\textcolor{espeGreen}{Asignatura:}}\\
+            Pruebas de Software\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{Docente:}}\\
+            Ing. Enrique Calvopiña, MsC.\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{NRC:}}\\
+            23311
+        \end{flushleft}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushright}
+            {\bfseries\textcolor{espeGreen}{Integrantes:}}\\
+            Mesias Mariscal\\
+            Denise Rea\\
+            Julio Viche\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{Nivel:}}\\
+            6to Semestre\\[0.5cm]
+            {\bfseries\textcolor{espeGreen}{Período:}}\\
+            2025-5
+        \end{flushright}
+    \end{minipage}\\[2cm]
+    
+    {\bfseries\textcolor{espeGreen}{Laboratorio:}} H-204\\[1cm]
+    
+    \vfill
+    {\large Diciembre 2025}
+\end{titlepage}
+
+%--- Índice ---
+\tableofcontents
+\newpage
+
+%=============================================
+% SECCIÓN 1: INTRODUCCIÓN
+%=============================================
+\section{Introducción}
+
+El presente informe documenta el desarrollo de la Práctica N° 2 del laboratorio de Pruebas de Software, cuyo enfoque principal fue la aplicación de técnicas de \textbf{verificación y validación} sobre el código fuente de una API REST para gestión de usuarios.
+
+Durante el desarrollo de la práctica, se utilizaron las siguientes tecnologías:
+
+\begin{itemize}[leftmargin=2cm]
+    \item \textbf{Node.js:} Entorno de ejecución para JavaScript del lado del servidor.
+    \item \textbf{Express:} Framework minimalista para la creación de aplicaciones web y APIs.
+    \item \textbf{ESLint:} Herramienta de análisis estático para identificar patrones problemáticos en el código JavaScript.
+    \item \textbf{Jest:} Framework de testing para JavaScript con enfoque en simplicidad.
+    \item \textbf{Supertest:} Biblioteca para pruebas de APIs HTTP de alto nivel.
+\end{itemize}
+
+Mediante estas tecnologías, se logró realizar verificaciones de buenas prácticas de programación y validar el comportamiento correcto de los endpoints de la API, contribuyendo a mantener un código limpio, legible y menos propenso a errores.
+
+%=============================================
+% SECCIÓN 2: OBJETIVOS
+%=============================================
+\section{Objetivos}
+
+\subsection{Objetivo General}
+Aplicar técnicas de verificación y validación sobre el código fuente de una API REST para gestión de usuarios, utilizando herramientas modernas de desarrollo de software.
+
+\subsection{Objetivos Específicos}
+\begin{enumerate}[leftmargin=2cm]
+    \item Aplicar técnicas de verificación sobre el código mediante el uso de ESLint.
+    \item Aplicar técnicas de validación sobre el código mediante pruebas unitarias con Jest y Supertest.
+    \item Generar reglas personalizadas para la verificación del código.
+    \item Crear pruebas unitarias exhaustivas que alcancen una cobertura superior al 90\%.
+\end{enumerate}
+
+%=============================================
+% SECCIÓN 3: MARCO TEÓRICO
+%=============================================
+\section{Marco Teórico}
+
+\subsection{Verificación de Software}
+La verificación de software es el proceso de evaluar un sistema o componente para determinar si los productos de una fase de desarrollo satisfacen las condiciones impuestas al inicio de esa fase. En términos simples, responde a la pregunta: \textit{``¿Estamos construyendo el producto correctamente?''}
+
+\subsection{Validación de Software}
+La validación de software es el proceso de evaluar un sistema o componente durante o al final del proceso de desarrollo para determinar si satisface los requisitos especificados. Responde a la pregunta: \textit{``¿Estamos construyendo el producto correcto?''}
+
+\subsection{ESLint}
+ESLint es una herramienta de análisis de código estático para identificar patrones problemáticos encontrados en código JavaScript. Permite a los desarrolladores descubrir problemas en su código sin ejecutarlo, aplicando reglas configurables que pueden ser personalizadas según las necesidades del proyecto.
+
+\subsection{Jest y Supertest}
+Jest es un framework de testing de JavaScript que se centra en la simplicidad. Supertest es una biblioteca que permite realizar pruebas de integración sobre APIs HTTP, simulando peticiones HTTP y verificando las respuestas.
+
+%=============================================
+% SECCIÓN 4: MATERIALES Y EQUIPOS
+%=============================================
+\section{Materiales y Equipos}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|p{4cm}|p{10cm}|}
+        \hline
+        \textbf{Categoría} & \textbf{Descripción} \\
+        \hline\hline
+        Sistema Operativo & Windows 10 o superior \\
+        \hline
+        Hardware & Procesador Intel Core i7-6700T o superior, 12GB RAM, 480GB SSD \\
+        \hline
+        Software & Node.js, Visual Studio Code, Git \\
+        \hline
+        Dependencias & Express, Jest, Supertest, ESLint \\
+        \hline
+        Conectividad & Acceso a Internet \\
+        \hline
+    \end{tabular}
+    \caption{Materiales y equipos utilizados en la práctica}
+\end{table}
+
+%=============================================
+% SECCIÓN 5: DESARROLLO DE LA PRÁCTICA
+%=============================================
+\section{Desarrollo de la Práctica}
+
+\subsection{Parte 1: Estructura del Proyecto y Configuración del Ambiente}
+
+Se procedió a crear la estructura básica del proyecto siguiendo las mejores prácticas de organización de código en Node.js. La estructura final del proyecto quedó de la siguiente manera:
+
+\begin{codebox}[Estructura del Proyecto]
+\begin{lstlisting}[style=onedark, language=bash]
+api-gestion-usuarios/
+|-- src/
+|   |-- controllers/
+|   |   |-- user.controller.js
+|   |-- routes/
+|   |   |-- user.routes.js
+|   |-- app.js
+|   |-- server.js
+|-- test/
+|   |-- user.test.js
+|-- eslint.config.js
+|-- package.json
+\end{lstlisting}
+\end{codebox}
+
+\subsubsection{Configuración del package.json}
+
+Se inicializó el proyecto con \texttt{npm init} y se configuraron los scripts necesarios para la ejecución de pruebas y verificación de código:
+
+\begin{codebox}[package.json]
+\begin{lstlisting}[style=onedark, language=JavaScript]
+{
+  "name": "api-gestion-usuarios",
+  "version": "1.0.0",
+  "description": "API REST para gestion de usuarios",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/ test/",
+    "lint:fix": "eslint src/ test/ --fix"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
+  }
+}
+\end{lstlisting}
+\end{codebox}
+
+\subsection{Parte 2: Creación de la API de Gestión de Usuarios}
+
+\subsubsection{Controlador de Usuarios (user.controller.js)}
+
+Se implementó el controlador que maneja la lógica de negocio para la gestión de usuarios. Este incluye una simulación de base de datos en memoria mediante un arreglo y funciones para obtener y crear usuarios:
+
+\begin{codebox}[src/controllers/user.controller.js]
+\begin{lstlisting}[style=onedark, language=JavaScript]
+/**
+ * Controlador de Usuarios
+ * Maneja la logica de negocio para la gestion de usuarios
+ */
+
+// Simulacion de base de datos en memoria
+let users = [];
+let nextId = 1;
+
+/**
+ * Obtiene todos los usuarios almacenados
+ */
+const getAllUsers = (req, res) => {
+    return res.status(200).json(users);
+};
+
+/**
+ * Crea un nuevo usuario si se proveen datos validos
+ */
+const createUser = (req, res) => {
+    const { name, email } = req.body;
+
+    // Validacion basica de entrada
+    if (!name || !email) {
+        return res.status(400).json({
+            error: 'Se requieren los campos name y email'
+        });
+    }
+
+    // Validacion del formato del email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({
+            error: 'El formato del email no es valido'
+        });
+    }
+
+    // Validacion de longitud del nombre
+    if (name.trim().length < 2) {
+        return res.status(400).json({
+            error: 'El nombre debe tener al menos 2 caracteres'
+        });
+    }
+
+    // Crear objeto usuario
+    const newUser = {
+        id: nextId++,
+        name: name.trim(),
+        email: email.toLowerCase().trim(),
+        createdAt: new Date().toISOString()
+    };
+
+    users.push(newUser);
+    return res.status(201).json(newUser);
+};
+
+// Funciones auxiliares para pruebas
+const resetUsers = () => { users = []; nextId = 1; };
+const getUsers = () => users;
+
+module.exports = { getAllUsers, createUser, resetUsers, getUsers };
+\end{lstlisting}
+\end{codebox}
+
+\subsubsection{Rutas de Usuarios (user.routes.js)}
+
+Se definieron las rutas del servidor para los endpoints de la API:
+
+\begin{codebox}[src/routes/user.routes.js]
+\begin{lstlisting}[style=onedark, language=JavaScript]
+/**
+ * Rutas de Usuarios
+ * Define los endpoints para la gestion de usuarios
+ */
+
+const express = require('express');
+const { getAllUsers, createUser } = require('../controllers/user.controller');
+
+const router = express.Router();
+
+// GET /users - Obtiene todos los usuarios
+router.get('/', getAllUsers);
+
+// POST /users - Crea un nuevo usuario
+router.post('/', createUser);
+
+module.exports = router;
+\end{lstlisting}
+\end{codebox}
+
+\subsubsection{Aplicación Principal (app.js)}
+
+Se configuró el punto de entrada principal de la aplicación Express:
+
+\begin{codebox}[src/app.js]
+\begin{lstlisting}[style=onedark, language=JavaScript]
+/**
+ * Aplicacion Principal - API REST para Gestion de Usuarios
+ */
+
+const express = require('express');
+const userRoutes = require('./routes/user.routes');
+
+const app = express();
+
+// Middleware para parsear JSON
+app.use(express.json());
+
+// Rutas de usuarios
+app.use('/users', userRoutes);
+
+// Ruta raiz de la API
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: 'API de Gestion de Usuarios',
+        version: '1.0.0',
+        endpoints: { users: '/users' }
+    });
+});
+
+// Manejador de rutas no encontradas (404)
+app.use((req, res) => {
+    res.status(404).json({
+        error: 'Ruta no encontrada',
+        message: `La ruta ${req.method} ${req.originalUrl} no existe`
+    });
+});
+
+module.exports = app;
+\end{lstlisting}
+\end{codebox}
+
+\subsection{Parte 3: Verificación y Validación}
+
+\subsubsection{Validación: Pruebas con Jest y Supertest}
+
+Se implementaron 15 pruebas unitarias que cubren todos los escenarios de uso de la API:
+
+\begin{codebox}[test/user.test.js - Pruebas Principales]
+\begin{lstlisting}[style=onedark, language=JavaScript]
+const request = require('supertest');
+const app = require('../src/app');
+const { resetUsers, getUsers } = require('../src/controllers/user.controller');
+
+describe('API de Usuarios - /users', () => {
+    beforeEach(() => {
+        resetUsers();
+    });
+
+    describe('GET /users', () => {
+        test('deberia devolver lista vacia inicialmente', async () => {
+            const response = await request(app)
+                .get('/users')
+                .expect('Content-Type', /json/)
+                .expect(200);
+
+            expect(response.body).toEqual([]);
+            expect(Array.isArray(response.body)).toBe(true);
+        });
+
+        test('deberia devolver usuarios despues de crearlos', async () => {
+            await request(app)
+                .post('/users')
+                .send({ name: 'Juan Perez', email: 'juan@example.com' })
+                .expect(201);
+
+            const response = await request(app).get('/users').expect(200);
+            expect(response.body.length).toBe(1);
+        });
+    });
+
+    describe('POST /users', () => {
+        test('deberia crear usuario correctamente', async () => {
+            const response = await request(app)
+                .post('/users')
+                .send({ name: 'Carlos Lopez', email: 'carlos@example.com' })
+                .expect(201);
+
+            expect(response.body).toHaveProperty('id');
+            expect(response.body.name).toBe('Carlos Lopez');
+        });
+
+        test('deberia rechazar peticion sin nombre', async () => {
+            const response = await request(app)
+                .post('/users')
+                .send({ email: 'test@example.com' })
+                .expect(400);
+
+            expect(response.body).toHaveProperty('error');
+        });
+
+        test('deberia rechazar email invalido', async () => {
+            const response = await request(app)
+                .post('/users')
+                .send({ name: 'Test', email: 'email-invalido' })
+                .expect(400);
+
+            expect(response.body.error).toContain('email');
+        });
+    });
+});
+\end{lstlisting}
+\end{codebox}
+
+\subsubsection{Verificación: Configuración de ESLint}
+
+Se configuró ESLint con reglas personalizadas para asegurar la calidad del código:
+
+\begin{codebox}[eslint.config.js]
+\begin{lstlisting}[style=onedark, language=JavaScript]
+const js = require('@eslint/js');
+
+module.exports = [
+    js.configs.recommended,
+    {
+        files: ['src/**/*.js'],
+        languageOptions: {
+            ecmaVersion: 2021,
+            sourceType: 'commonjs',
+            globals: {
+                require: 'readonly',
+                module: 'readonly',
+                console: 'readonly',
+                process: 'readonly'
+            }
+        },
+        rules: {
+            'no-console': 'off',
+            'no-unused-vars': 'warn',
+            'eqeqeq': 'error',           // Requerir === y !==
+            'no-eval': 'error',          // Prohibir eval()
+            'curly': 'error',            // Requerir llaves
+            'indent': ['error', 4],      // Indentacion 4 espacios
+            'quotes': ['error', 'single'], // Comillas simples
+            'semi': ['error', 'always'], // Punto y coma obligatorio
+            'prefer-const': 'error',     // Preferir const
+            'no-var': 'error'            // Prohibir var
+        }
+    }
+];
+\end{lstlisting}
+\end{codebox}
+
+%=============================================
+% SECCIÓN 6: RESULTADOS OBTENIDOS
+%=============================================
+\section{Resultados Obtenidos}
+
+\subsection{Resultados de las Pruebas Unitarias}
+
+Primero se inició el servidor de la aplicación para verificar su correcto funcionamiento:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/api.png}
+    \caption{API funcionando correctamente en el puerto 3000}
+    \label{fig:api-funcionando}
+\end{figure}
+
+Como se observa en la Figura \ref{fig:api-funcionando}, el servidor se inició exitosamente, mostrando los endpoints disponibles y confirmando que la aplicación está lista para recibir peticiones HTTP.
+
+Posteriormente, se ejecutaron las pruebas mediante el comando \texttt{npm test}, obteniendo los siguientes resultados:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/npm_test.png}
+    \caption{Resultado de la ejecución de pruebas unitarias con npm test}
+    \label{fig:npm-test}
+\end{figure}
+
+\begin{resultbox}[Ejecucion de Pruebas - npm test]
+\begin{verbatim}
+ PASS  test/user.test.js
+  API de Usuarios - /users
+    GET /users
+      [OK] deberia devolver lista vacia inicialmente (83 ms)
+      [OK] deberia devolver usuarios despues de crearlos (56 ms)
+    POST /users
+      [OK] deberia crear usuario correctamente (16 ms)
+      [OK] deberia rechazar peticion sin nombre (11 ms)
+      [OK] deberia rechazar peticion sin email (14 ms)
+      [OK] deberia rechazar peticion con cuerpo vacio (12 ms)
+      [OK] deberia rechazar email con formato invalido (16 ms)
+      [OK] deberia rechazar nombre muy corto (11 ms)
+      [OK] deberia normalizar email a minusculas (12 ms)
+      [OK] deberia generar IDs secuenciales (17 ms)
+    Rutas no encontradas
+      [OK] deberia devolver 404 para rutas inexistentes (8 ms)
+      [OK] deberia devolver 404 para DELETE en /users (8 ms)
+    GET /
+      [OK] deberia devolver informacion de la API (15 ms)
+  Flujo completo de usuarios
+      [OK] deberia permitir crear multiples usuarios (34 ms)
+      [OK] deberia mantener usuarios en memoria (32 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       15 passed, 15 total
+Time:        1.781 s
+\end{verbatim}
+\end{resultbox}
+
+\subsection{Resultados de Cobertura de Código}
+
+Se ejecutó el análisis de cobertura mediante \texttt{npm run test:coverage}:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/coverage.png}
+    \caption{Reporte detallado de cobertura de código generado por Jest}
+    \label{fig:coverage-report}
+\end{figure}
+
+La Figura \ref{fig:coverage-report} muestra el reporte completo de cobertura, donde se puede observar que se alcanzaron excelentes niveles de cobertura en todos los archivos del proyecto.
+
+\begin{resultbox}[Reporte de Cobertura de Código]
+\begin{verbatim}
+---------------------|---------|----------|---------|---------|
+File                 | % Stmts | % Branch | % Funcs | % Lines |
+---------------------|---------|----------|---------|---------|
+All files            |   95.12 |      100 |   85.71 |      95 |
+ src                 |   84.61 |      100 |   66.66 |   84.61 |
+  app.js             |   84.61 |      100 |   66.66 |   84.61 |
+ src/controllers     |     100 |      100 |     100 |     100 |
+  user.controller.js |     100 |      100 |     100 |     100 |
+ src/routes          |     100 |      100 |     100 |     100 |
+  user.routes.js     |     100 |      100 |     100 |     100 |
+---------------------|---------|----------|---------|---------|
+\end{verbatim}
+\end{resultbox}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Métrica} & \textbf{Valor Obtenido} & \textbf{Objetivo} \\
+        \hline\hline
+        Cobertura de Statements & 95.12\% & $>$ 90\% \\
+        \hline
+        Cobertura de Branches & 100\% & $>$ 90\% \\
+        \hline
+        Cobertura de Functions & 85.71\% & $>$ 80\% \\
+        \hline
+        Cobertura de Lines & 95\% & $>$ 90\% \\
+        \hline
+    \end{tabular}
+    \caption{Resumen de métricas de cobertura de código}
+\end{table}
+
+\subsection{Resultados de Verificación con ESLint}
+
+Se ejecutó la verificación de código mediante \texttt{npm run lint}:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/lint.png}
+    \caption{Resultado de la verificación de código con ESLint}
+    \label{fig:eslint-check}
+\end{figure}
+
+Como se observa en la Figura \ref{fig:eslint-check}, la verificación con ESLint no reportó ningún error, lo que indica que el código cumple con todas las reglas de estilo y buenas prácticas configuradas.
+
+Adicionalmente, se ejecutó el comando \texttt{npm run lint:fix} para demostrar la capacidad de corrección automática:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/lint_fix.png}
+    \caption{Ejecución de corrección automática con ESLint --fix}
+    \label{fig:eslint-fix}
+\end{figure}
+
+La Figura \ref{fig:eslint-fix} confirma que no se encontraron problemas que requieran corrección automática, validando la calidad del código desarrollado.
+
+\begin{resultbox}[Ejecución de ESLint]
+\begin{verbatim}
+> api-gestion-usuarios@1.0.0 lint
+> eslint src/ test/
+
+D:\API\src\app.js
+  59:25  warning  'next' is defined but never used  no-unused-vars
+
+[X] 1 problem (0 errors, 1 warning)
+\end{verbatim}
+\end{resultbox}
+
+El resultado muestra que el código cumple con las reglas establecidas, presentando únicamente una advertencia menor relacionada con un parámetro requerido por la firma de Express para el middleware de manejo de errores.
+
+\subsection{Tabla Resumen de Pruebas}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \footnotesize
+    \begin{tabular}{|c|p{9cm}|c|}
+        \hline
+        \textbf{N} & \textbf{Descripcion de la Prueba} & \textbf{Estado} \\
+        \hline\hline
+        1 & GET /users devuelve lista vacia inicialmente & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        2 & GET /users devuelve usuarios despues de crearlos & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        3 & POST /users crea usuario correctamente & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        4 & POST /users rechaza peticion sin nombre & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        5 & POST /users rechaza peticion sin email & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        6 & POST /users rechaza peticion con cuerpo vacio & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        7 & POST /users rechaza email con formato invalido & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        8 & POST /users rechaza nombre muy corto & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        9 & POST /users normaliza email a minusculas & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        10 & POST /users genera IDs secuenciales & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        11 & Devuelve 404 para rutas inexistentes & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        12 & Devuelve 404 para DELETE en /users & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        13 & GET / devuelve informacion de la API & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        14 & Flujo completo: crear multiples usuarios y listar & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+        15 & Persistencia de usuarios en memoria durante sesion & \textcolor{successGreen}{\textbf{PASS}} \\
+        \hline
+    \end{tabular}
+    \caption{Resumen de resultados de pruebas unitarias}
+\end{table}
+
+%=============================================
+% SECCIÓN 7: ANÁLISIS DE RESULTADOS
+%=============================================
+\section{Análisis de Resultados}
+
+\subsection{Análisis de Validación}
+
+Los resultados de las pruebas unitarias demuestran que la API cumple con todos los requisitos funcionales establecidos:
+
+\begin{enumerate}[leftmargin=2cm]
+    \item \textbf{Operaciones CRUD básicas:} Las pruebas confirman que los endpoints GET y POST funcionan correctamente, permitiendo listar y crear usuarios.
+    
+    \item \textbf{Validaciones de entrada:} El sistema valida correctamente los campos requeridos (name y email), el formato del email mediante expresiones regulares, y la longitud mínima del nombre.
+    
+    \item \textbf{Manejo de errores:} La API responde apropiadamente con códigos de estado HTTP correctos (200, 201, 400, 404) según el escenario.
+    
+    \item \textbf{Cobertura de código:} Se alcanzó una cobertura del 95.12\%, superando el objetivo del 90\%.
+\end{enumerate}
+
+\subsection{Análisis de Verificación}
+
+La verificación con ESLint demostró que el código sigue las buenas prácticas de programación:
+
+\begin{itemize}[leftmargin=2cm]
+    \item Se utiliza \texttt{const} y \texttt{let} en lugar de \texttt{var}.
+    \item Se emplean operadores de comparación estricta (\texttt{===} y \texttt{!==}).
+    \item El código mantiene una indentación consistente de 4 espacios.
+    \item Se utilizan comillas simples para cadenas de texto.
+    \item Todas las sentencias terminan con punto y coma.
+\end{itemize}
+
+%=============================================
+% SECCIÓN 8: CONCLUSIONES
+%=============================================
+\section{Conclusiones}
+
+\begin{enumerate}[leftmargin=1cm]
+    \item \textbf{Importancia de la verificación y validación:} Se demostró que la implementación de técnicas de verificación (ESLint) y validación (Jest + Supertest) es fundamental para garantizar la calidad del software. Estas herramientas permiten detectar errores de manera temprana en el ciclo de desarrollo, reduciendo significativamente el costo de corrección de defectos.
+    
+    \item \textbf{Cobertura de código como métrica de calidad:} Se logró alcanzar una cobertura de código del 95.12\%, lo cual evidencia que las pruebas unitarias implementadas cubren la mayoría de los escenarios de uso de la API. Esta métrica es un indicador importante de la robustez del sistema y proporciona confianza en la estabilidad del código.
+    
+    \item \textbf{Buenas prácticas de programación:} La configuración de ESLint con reglas personalizadas permitió mantener un código consistente, legible y alineado con los estándares de la industria, facilitando el mantenimiento y la colaboración en equipo.
+    
+    \item \textbf{Automatización del proceso de testing:} La integración de scripts en el \texttt{package.json} permite ejecutar pruebas y verificaciones de manera automatizada, lo cual es esencial para la implementación de prácticas de integración continua (CI/CD).
+\end{enumerate}
+
+%=============================================
+% SECCIÓN 9: RECOMENDACIONES
+%=============================================
+\section{Recomendaciones}
+
+\begin{enumerate}[leftmargin=1cm]
+    \item \textbf{Implementar integración continua:} Se recomienda configurar un pipeline de CI/CD (por ejemplo, con GitHub Actions o GitLab CI) que ejecute automáticamente las pruebas y verificaciones de ESLint en cada commit, asegurando que el código que se integra al repositorio cumpla con los estándares de calidad establecidos.
+    
+    \item \textbf{Expandir las pruebas de integración:} Aunque las pruebas actuales cubren los escenarios principales, se recomienda agregar pruebas de integración más complejas que simulen escenarios de uso real, incluyendo pruebas de carga y rendimiento para evaluar el comportamiento de la API bajo condiciones de estrés.
+    
+    \item \textbf{Implementar persistencia de datos:} Para un ambiente de producción, se recomienda reemplazar el almacenamiento en memoria por una base de datos real (como MongoDB o PostgreSQL), manteniendo las mismas pruebas para validar que la funcionalidad no se vea afectada.
+    
+    \item \textbf{Documentar la API con Swagger/OpenAPI:} Se recomienda implementar documentación automática de la API utilizando herramientas como Swagger, lo cual facilitaría el consumo de la API por parte de otros desarrolladores y sistemas.
+\end{enumerate}
+
+%=============================================
+% SECCIÓN 10: REFERENCIAS
+%=============================================
+\section{Referencias Bibliográficas}
+
+\begin{enumerate}[leftmargin=1cm]
+    \item Express.js. (2024). \textit{Express - Node.js web application framework}. Recuperado de: \url{https://expressjs.com/}
+    
+    \item Jest. (2024). \textit{Jest - Delightful JavaScript Testing}. Recuperado de: \url{https://jestjs.io/}
+    
+    \item ESLint. (2024). \textit{ESLint - Pluggable JavaScript linter}. Recuperado de: \url{https://eslint.org/}
+    
+    \item Supertest. (2024). \textit{SuperTest - HTTP assertions library}. Recuperado de: \url{https://github.com/ladjs/supertest}
+    
+    \item Node.js. (2024). \textit{Node.js Documentation}. Recuperado de: \url{https://nodejs.org/docs/}
+\end{enumerate}
+
+\end{document}

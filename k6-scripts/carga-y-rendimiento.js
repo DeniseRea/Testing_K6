@@ -11,14 +11,10 @@ export const options = {
     { duration: '10s', target: 0 },   // Ramp-down: bajar a 0 usuarios en 10s
   ],
   thresholds: {
-    // El 95% de las solicitudes deben completarse en menos de 500ms
-    'http_req_duration': ['p(95)<500'],
-    // El 99% de las solicitudes deben completarse en menos de 1000ms
-    'http_req_duration': ['p(99)<1000'],
+    // El 95% de las solicitudes deben completarse en menos de 500ms, el 99% en menos de 1s
+    'http_req_duration': ['p(95)<500', 'p(99)<1000'],
     // Menos del 10% de las solicitudes pueden fallar
     'http_req_failed': ['rate<0.1'],
-    // El 90% de las solicitudes deben ser exitosas
-    'http_reqs': ['rate>0.9'],
   },
 };
 
